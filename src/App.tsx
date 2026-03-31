@@ -94,7 +94,6 @@ export default function App() {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       const model = 'gemini-2.5-flash-image';
       
-      // Extract base64 data and mime type
       const base64Data = selectedImage.split(',')[1];
       const mimeType = selectedImage.split(';')[0].split(':')[1];
 
@@ -148,80 +147,92 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9] text-[#1A1A1A] font-sans selection:bg-orange-100">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-              <Wand2 className="w-5 h-5 text-white" />
-            </div>
-            <h1 className="text-lg font-semibold tracking-tight">Product Studio</h1>
+    <div className="min-h-screen bg-paper text-ink selection:bg-accent/20">
+      {/* Navigation Rail / Header */}
+      <header className="h-16 border-b border-ink/5 bg-white/80 backdrop-blur-md sticky top-0 z-50 px-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-ink rounded-full flex items-center justify-center">
+            <Wand2 className="w-5 h-5 text-white" />
           </div>
-          <div className="flex items-center gap-4 text-sm font-medium text-gray-500">
-            <span>Upload</span>
-            <ChevronRight className="w-4 h-4" />
-            <span>Style</span>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-black">Generate</span>
+          <div>
+            <h1 className="text-sm font-bold tracking-tight uppercase">Product Studio</h1>
+            <p className="text-[10px] font-medium text-ink/40 uppercase tracking-widest">AI Visualization Tool</p>
           </div>
         </div>
+        
+        <div className="hidden md:flex items-center gap-8">
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-5 rounded-full bg-ink text-white text-[10px] flex items-center justify-center font-bold">1</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-ink/40">Upload</span>
+          </div>
+          <div className="w-4 h-[1px] bg-ink/10" />
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-5 rounded-full bg-ink text-white text-[10px] flex items-center justify-center font-bold">2</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-ink/40">Configure</span>
+          </div>
+          <div className="w-4 h-[1px] bg-ink/10" />
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-5 rounded-full bg-ink text-white text-[10px] flex items-center justify-center font-bold">3</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-ink">Generate</span>
+          </div>
+        </div>
+
+        <button className="text-[10px] font-bold uppercase tracking-widest px-4 py-2 border border-ink/10 rounded-full hover:bg-ink hover:text-white transition-all">
+          Documentation
+        </button>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid lg:grid-cols-12 gap-12">
-          {/* Left Column: Controls */}
-          <div className="lg:col-span-4 space-y-8">
-            {/* Mode Selection */}
-            <section>
-              <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Select Mode</h2>
-              <div className="flex p-1 bg-gray-100 rounded-xl">
-                <button
-                  onClick={() => setMode('studio')}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all
-                    ${mode === 'studio' ? 'bg-white shadow-sm text-black' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  <Box className="w-4 h-4" />
-                  Studio
-                </button>
-                <button
-                  onClick={() => setMode('avatar')}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all
-                    ${mode === 'avatar' ? 'bg-white shadow-sm text-black' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  <User className="w-4 h-4" />
-                  Avatar
-                </button>
+      <main className="max-w-[1600px] mx-auto grid lg:grid-cols-2 min-h-[calc(100vh-64px)]">
+        {/* Left: Controls */}
+        <div className="p-8 lg:p-12 border-r border-ink/5 bg-white overflow-y-auto max-h-[calc(100vh-64px)] scrollbar-hide">
+          <div className="max-w-md mx-auto space-y-12">
+            {/* Step 1: Mode & Upload */}
+            <section className="space-y-6">
+              <div className="flex items-baseline justify-between">
+                <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-ink/30">01. Source & Mode</h2>
+                <div className="flex p-1 bg-paper rounded-full border border-ink/5">
+                  <button
+                    onClick={() => setMode('studio')}
+                    className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all
+                      ${mode === 'studio' ? 'bg-white shadow-sm text-ink' : 'text-ink/40 hover:text-ink/60'}`}
+                  >
+                    Studio
+                  </button>
+                  <button
+                    onClick={() => setMode('avatar')}
+                    className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all
+                      ${mode === 'avatar' ? 'bg-white shadow-sm text-ink' : 'text-ink/40 hover:text-ink/60'}`}
+                  >
+                    Avatar
+                  </button>
+                </div>
               </div>
-            </section>
 
-            <section>
-              <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">1. Upload Product</h2>
               <div 
                 onClick={() => fileInputRef.current?.click()}
-                className={`relative aspect-square rounded-2xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center gap-4 group
-                  ${selectedImage ? 'border-black bg-white' : 'border-gray-200 hover:border-gray-400 bg-gray-50'}`}
+                className={`relative aspect-video rounded-2xl border border-ink/5 transition-all cursor-pointer flex flex-col items-center justify-center gap-4 group overflow-hidden
+                  ${selectedImage ? 'bg-paper' : 'bg-paper/50 hover:bg-paper'}`}
               >
                 {selectedImage ? (
                   <>
                     <img 
                       src={selectedImage} 
                       alt="Original" 
-                      className="absolute inset-0 w-full h-full object-contain p-4"
+                      className="w-full h-full object-contain p-6"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
-                      <span className="text-white text-sm font-medium">Change Image</span>
+                    <div className="absolute inset-0 bg-ink/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center backdrop-blur-sm">
+                      <span className="text-white text-[10px] font-bold uppercase tracking-[0.2em]">Replace Asset</span>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center">
-                      <Upload className="w-6 h-6 text-gray-400" />
+                    <div className="w-12 h-12 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                      <Upload className="w-5 h-5 text-ink/40" />
                     </div>
                     <div className="text-center">
-                      <p className="text-sm font-medium">Click to upload</p>
-                      <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 10MB</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest">Drop product image</p>
+                      <p className="text-[9px] text-ink/30 uppercase tracking-widest mt-1">PNG, JPG up to 10MB</p>
                     </div>
                   </>
                 )}
@@ -235,26 +246,28 @@ export default function App() {
               </div>
             </section>
 
-            {mode === 'studio' ? (
-              <section>
-                <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">2. Select Background</h2>
+            {/* Step 2: Configuration */}
+            <section className="space-y-8">
+              <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-ink/30">02. Configuration</h2>
+              
+              {mode === 'studio' ? (
                 <div className="grid grid-cols-1 gap-3">
                   {STYLES.map((style) => (
                     <button
                       key={style.id}
                       onClick={() => setSelectedStyle(style)}
-                      className={`p-4 rounded-xl border text-left transition-all relative group
+                      className={`p-5 rounded-2xl border text-left transition-all relative group
                         ${selectedStyle.id === style.id 
-                          ? 'border-black bg-white shadow-sm' 
-                          : 'border-gray-200 hover:border-gray-300 bg-transparent'}`}
+                          ? 'border-ink bg-white shadow-xl shadow-ink/5' 
+                          : 'border-ink/5 hover:border-ink/20 bg-transparent'}`}
                     >
                       <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="text-sm font-semibold">{style.name}</h3>
-                          <p className="text-xs text-gray-500 mt-1 leading-relaxed">{style.description}</p>
+                        <div className="space-y-1">
+                          <h3 className="text-[11px] font-bold uppercase tracking-widest">{style.name}</h3>
+                          <p className="text-[10px] text-ink/40 leading-relaxed max-w-[200px]">{style.description}</p>
                         </div>
                         {selectedStyle.id === style.id && (
-                          <div className="w-5 h-5 bg-black rounded-full flex items-center justify-center">
+                          <div className="w-5 h-5 bg-ink rounded-full flex items-center justify-center">
                             <Check className="w-3 h-3 text-white" />
                           </div>
                         )}
@@ -262,147 +275,138 @@ export default function App() {
                     </button>
                   ))}
                 </div>
-              </section>
-            ) : (
-              <section>
-                <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">2. Select Gender</h2>
-                <div className="grid grid-cols-2 gap-3">
-                  {(['female', 'male'] as const).map((gender) => (
-                    <button
-                      key={gender}
-                      onClick={() => setSelectedGender(gender)}
-                      className={`p-4 rounded-xl border flex flex-col items-center gap-3 transition-all relative
-                        ${selectedGender === gender 
-                          ? 'border-black bg-white shadow-sm' 
-                          : 'border-gray-200 hover:border-gray-300 bg-transparent'}`}
-                    >
-                      <UserCircle className={`w-8 h-8 ${selectedGender === gender ? 'text-black' : 'text-gray-300'}`} />
-                      <span className="text-sm font-semibold capitalize">{gender}</span>
-                      {selectedGender === gender && (
-                        <div className="absolute top-2 right-2 w-4 h-4 bg-black rounded-full flex items-center justify-center">
-                          <Check className="w-2 h-2 text-white" />
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {mode === 'avatar' && (
-              <>
-                <section>
-                  <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">3. Scene Selector</h2>
-                  <div className="grid grid-cols-2 gap-2">
-                    {SCENES.map((scene) => (
-                      <button
-                        key={scene.id}
-                        onClick={() => setSelectedScene(scene)}
-                        className={`py-2 px-3 rounded-lg text-xs font-bold border transition-all
-                          ${selectedScene.id === scene.id 
-                            ? 'border-black bg-white shadow-sm text-black' 
-                            : 'border-gray-200 text-gray-400 hover:border-gray-300'}`}
-                      >
-                        {scene.name}
-                      </button>
-                    ))}
-                  </div>
-                </section>
-
-                <section>
-                  <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">4. Pose Selector</h2>
-                  <div className="grid grid-cols-1 gap-2">
-                    {POSES.map((pose) => (
-                      <button
-                        key={pose.id}
-                        onClick={() => setSelectedPose(pose)}
-                        className={`py-2.5 px-4 rounded-xl text-xs font-bold border text-left transition-all relative
-                          ${selectedPose.id === pose.id 
-                            ? 'border-black bg-white shadow-sm text-black' 
-                            : 'border-gray-200 text-gray-400 hover:border-gray-300'}`}
-                      >
-                        <div className="flex justify-between items-center">
-                          <span>{pose.name}</span>
-                          {selectedPose.id === pose.id && (
-                            <Check className="w-3.5 h-3.5 text-black" />
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </section>
-
-                <section>
-                  <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">5. Appearance</h2>
+              ) : (
+                <div className="space-y-10">
+                  {/* Gender */}
                   <div className="space-y-4">
-                    <div>
-                      <label className="text-[10px] font-bold text-gray-400 uppercase mb-2 block">Hair Color</label>
-                      <div className="flex flex-wrap gap-1.5">
-                        {HAIR_COLORS.map((color) => (
+                    <label className="text-[10px] font-bold text-ink/30 uppercase tracking-widest">Model Identity</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {(['female', 'male'] as const).map((gender) => (
+                        <button
+                          key={gender}
+                          onClick={() => setSelectedGender(gender)}
+                          className={`p-4 rounded-2xl border flex items-center gap-4 transition-all
+                            ${selectedGender === gender 
+                              ? 'border-ink bg-white shadow-lg shadow-ink/5' 
+                              : 'border-ink/5 hover:border-ink/20 bg-transparent'}`}
+                        >
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${selectedGender === gender ? 'bg-ink text-white' : 'bg-paper text-ink/20'}`}>
+                            <User className="w-4 h-4" />
+                          </div>
+                          <span className="text-[11px] font-bold uppercase tracking-widest">{gender}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Scene & Pose */}
+                  <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-bold text-ink/30 uppercase tracking-widest">Environment</label>
+                      <div className="flex flex-col gap-2">
+                        {SCENES.map((scene) => (
                           <button
-                            key={color.id}
-                            onClick={() => setSelectedHairColor(color)}
-                            className={`px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all
-                              ${selectedHairColor.id === color.id 
-                                ? 'border-black bg-black text-white' 
-                                : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
+                            key={scene.id}
+                            onClick={() => setSelectedScene(scene)}
+                            className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all text-left
+                              ${selectedScene.id === scene.id 
+                                ? 'border-ink bg-ink text-white' 
+                                : 'border-ink/5 text-ink/40 hover:border-ink/20'}`}
                           >
-                            {color.name}
+                            {scene.name}
                           </button>
                         ))}
                       </div>
                     </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-gray-400 uppercase mb-2 block">Hairstyle</label>
-                      <div className="flex flex-wrap gap-1.5">
-                        {HAIRSTYLES.map((style) => (
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-bold text-ink/30 uppercase tracking-widest">Action</label>
+                      <div className="flex flex-col gap-2">
+                        {POSES.map((pose) => (
                           <button
-                            key={style.id}
-                            onClick={() => setSelectedHairstyle(style)}
-                            className={`px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all
-                              ${selectedHairstyle.id === style.id 
-                                ? 'border-black bg-black text-white' 
-                                : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
+                            key={pose.id}
+                            onClick={() => setSelectedPose(pose)}
+                            className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all text-left
+                              ${selectedPose.id === pose.id 
+                                ? 'border-ink bg-ink text-white' 
+                                : 'border-ink/5 text-ink/40 hover:border-ink/20'}`}
                           >
-                            {style.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-gray-400 uppercase mb-2 block">Skin Tone</label>
-                      <div className="flex flex-wrap gap-1.5">
-                        {SKIN_TONES.map((tone) => (
-                          <button
-                            key={tone.id}
-                            onClick={() => setSelectedSkinTone(tone)}
-                            className={`px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all
-                              ${selectedSkinTone.id === tone.id 
-                                ? 'border-black bg-black text-white' 
-                                : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
-                          >
-                            {tone.name}
+                            {pose.name.split(' / ')[0]}
                           </button>
                         ))}
                       </div>
                     </div>
                   </div>
-                </section>
-              </>
-            )}
 
-            {/* Aspect Ratio Selection */}
-            <section>
-              <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">{mode === 'studio' ? '3' : '6'}. Aspect Ratio</h2>
-              <div className="grid grid-cols-3 gap-2">
+                  {/* Appearance */}
+                  <div className="space-y-6 pt-4 border-t border-ink/5">
+                    <h3 className="text-[10px] font-bold text-ink/30 uppercase tracking-widest">Appearance Details</h3>
+                    <div className="space-y-6">
+                      <div className="space-y-3">
+                        <label className="text-[9px] font-bold text-ink/40 uppercase tracking-[0.2em]">Hair</label>
+                        <div className="flex flex-wrap gap-2">
+                          {HAIR_COLORS.map((color) => (
+                            <button
+                              key={color.id}
+                              onClick={() => setSelectedHairColor(color)}
+                              className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border transition-all
+                                ${selectedHairColor.id === color.id 
+                                  ? 'border-ink bg-ink text-white' 
+                                  : 'border-ink/5 text-ink/40 hover:border-ink/20'}`}
+                            >
+                              {color.name}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {HAIRSTYLES.map((style) => (
+                            <button
+                              key={style.id}
+                              onClick={() => setSelectedHairstyle(style)}
+                              className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border transition-all
+                                ${selectedHairstyle.id === style.id 
+                                  ? 'border-ink bg-ink text-white' 
+                                  : 'border-ink/5 text-ink/40 hover:border-ink/20'}`}
+                            >
+                              {style.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[9px] font-bold text-ink/40 uppercase tracking-[0.2em]">Skin Tone</label>
+                        <div className="flex flex-wrap gap-2">
+                          {SKIN_TONES.map((tone) => (
+                            <button
+                              key={tone.id}
+                              onClick={() => setSelectedSkinTone(tone)}
+                              className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border transition-all
+                                ${selectedSkinTone.id === tone.id 
+                                  ? 'border-ink bg-ink text-white' 
+                                  : 'border-ink/5 text-ink/40 hover:border-ink/20'}`}
+                            >
+                              {tone.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </section>
+
+            {/* Step 3: Output */}
+            <section className="space-y-6">
+              <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-ink/30">03. Output Format</h2>
+              <div className="grid grid-cols-3 gap-3">
                 {(['1:1', '16:9', '4:3'] as const).map((ratio) => (
                   <button
                     key={ratio}
                     onClick={() => setSelectedAspectRatio(ratio)}
-                    className={`py-2 rounded-lg text-xs font-bold border transition-all
+                    className={`py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all
                       ${selectedAspectRatio === ratio 
-                        ? 'border-black bg-white shadow-sm text-black' 
-                        : 'border-gray-200 text-gray-400 hover:border-gray-300'}`}
+                        ? 'border-ink bg-white shadow-sm text-ink' 
+                        : 'border-ink/5 text-ink/40 hover:border-ink/20'}`}
                   >
                     {ratio}
                   </button>
@@ -410,46 +414,60 @@ export default function App() {
               </div>
             </section>
 
-            <button
-              onClick={generatePhoto}
-              disabled={!selectedImage || isGenerating}
-              className={`w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all
-                ${!selectedImage || isGenerating 
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                  : 'bg-black text-white hover:bg-gray-800 active:scale-[0.98]'}`}
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Wand2 className="w-5 h-5" />
-                  Generate Studio Photo
-                </>
+            <div className="pt-8">
+              <button
+                onClick={generatePhoto}
+                disabled={!selectedImage || isGenerating}
+                className={`w-full py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 transition-all shadow-2xl
+                  ${!selectedImage || isGenerating 
+                    ? 'bg-ink/5 text-ink/20 cursor-not-allowed' 
+                    : 'bg-ink text-white hover:bg-accent hover:shadow-accent/20 active:scale-[0.98]'}`}
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Wand2 className="w-4 h-4" />
+                    Generate Visualization
+                  </>
+                )}
+              </button>
+              
+              {error && (
+                <motion.p 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-[10px] font-bold uppercase tracking-widest text-red-500 bg-red-50 p-4 rounded-2xl border border-red-100 mt-4 text-center"
+                >
+                  {error}
+                </motion.p>
               )}
-            </button>
+            </div>
+          </div>
+        </div>
 
-            {error && (
-              <p className="text-xs text-red-500 bg-red-50 p-3 rounded-lg border border-red-100">
-                {error}
-              </p>
-            )}
+        {/* Right: Result */}
+        <div className="bg-paper p-8 lg:p-12 flex flex-col items-center justify-center relative overflow-hidden">
+          {/* Background Decorative Elements */}
+          <div className="absolute inset-0 opacity-20 pointer-events-none">
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/10 blur-[120px] rounded-full" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-ink/5 blur-[120px] rounded-full" />
           </div>
 
-          {/* Right Column: Result */}
-          <div className="lg:col-span-8">
-            <div className={`bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm relative flex items-center justify-center transition-all duration-500
+          <div className="w-full max-w-4xl space-y-8 relative z-10">
+            <div className={`bg-white rounded-[40px] border border-ink/5 overflow-hidden shadow-2xl shadow-ink/10 relative flex items-center justify-center transition-all duration-700 ease-in-out
               ${selectedAspectRatio === '1:1' ? 'aspect-square' : selectedAspectRatio === '16:9' ? 'aspect-video' : 'aspect-[4/3]'}`}>
               <AnimatePresence mode="wait">
                 {generatedImage ? (
                   <motion.div
                     key="result"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="w-full h-full"
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="w-full h-full group"
                   >
                     <img 
                       src={generatedImage} 
@@ -457,13 +475,13 @@ export default function App() {
                       className="w-full h-full object-contain"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute bottom-6 right-6">
+                    <div className="absolute inset-0 bg-ink/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center backdrop-blur-sm">
                       <a 
                         href={generatedImage} 
                         download="product-studio-result.png"
-                        className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-xs font-bold border border-gray-200 hover:bg-white transition-colors shadow-sm"
+                        className="bg-white px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-accent hover:text-white transition-all shadow-2xl"
                       >
-                        Download Image
+                        Export High-Res
                       </a>
                     </div>
                   </motion.div>
@@ -473,15 +491,15 @@ export default function App() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex flex-col items-center gap-4"
+                    className="flex flex-col items-center gap-8"
                   >
                     <div className="relative">
-                      <div className="w-16 h-16 border-4 border-gray-100 border-t-black rounded-full animate-spin" />
-                      <Wand2 className="w-6 h-6 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black" />
+                      <div className="w-24 h-24 border-[1px] border-ink/5 border-t-accent rounded-full animate-spin" />
+                      <Wand2 className="w-8 h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-ink" />
                     </div>
-                    <div className="text-center">
-                      <p className="text-sm font-semibold">Creating your studio photo</p>
-                      <p className="text-xs text-gray-400 mt-1">Applying lighting and background...</p>
+                    <div className="text-center space-y-2">
+                      <p className="text-xs font-bold uppercase tracking-[0.3em]">Synthesizing Scene</p>
+                      <p className="text-[10px] text-ink/30 uppercase tracking-widest">Matching lighting & geometry...</p>
                     </div>
                   </motion.div>
                 ) : (
@@ -490,37 +508,33 @@ export default function App() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex flex-col items-center gap-4 text-gray-300"
+                    className="flex flex-col items-center gap-6 text-ink/10"
                   >
-                    <ImageIcon className="w-16 h-16" />
-                    <p className="text-sm font-medium">Your generated photo will appear here</p>
+                    <div className="w-24 h-24 rounded-full border-2 border-dashed border-ink/10 flex items-center justify-center">
+                      <ImageIcon className="w-10 h-10" />
+                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em]">Awaiting Visualization</p>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
-            {/* Tips/Info */}
-            <div className="mt-8 grid grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center">
-                  <Check className="w-4 h-4 text-orange-600" />
-                </div>
-                <h4 className="text-xs font-bold uppercase tracking-wider">Studio Lighting</h4>
-                <p className="text-xs text-gray-500 leading-relaxed">AI automatically adds soft shadows and professional highlights.</p>
+            {/* Status / Info Bar */}
+            <div className="grid grid-cols-3 gap-8 px-4">
+              <div className="space-y-3">
+                <div className="h-[1px] bg-ink/10 w-full" />
+                <h4 className="text-[9px] font-bold uppercase tracking-[0.2em] text-ink/40">Precision</h4>
+                <p className="text-[10px] font-medium leading-relaxed">AI preserves product geometry with sub-pixel accuracy.</p>
               </div>
-              <div className="space-y-2">
-                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                  <Check className="w-4 h-4 text-blue-600" />
-                </div>
-                <h4 className="text-xs font-bold uppercase tracking-wider">Object Preservation</h4>
-                <p className="text-xs text-gray-500 leading-relaxed">The product remains identical while the environment transforms.</p>
+              <div className="space-y-3">
+                <div className="h-[1px] bg-ink/10 w-full" />
+                <h4 className="text-[9px] font-bold uppercase tracking-[0.2em] text-ink/40">Atmosphere</h4>
+                <p className="text-[10px] font-medium leading-relaxed">Global illumination is calculated to match the selected scene.</p>
               </div>
-              <div className="space-y-2">
-                <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center">
-                  <Check className="w-4 h-4 text-green-600" />
-                </div>
-                <h4 className="text-xs font-bold uppercase tracking-wider">High Resolution</h4>
-                <p className="text-xs text-gray-500 leading-relaxed">Output is optimized for e-commerce and social media use.</p>
+              <div className="space-y-3">
+                <div className="h-[1px] bg-ink/10 w-full" />
+                <h4 className="text-[9px] font-bold uppercase tracking-[0.2em] text-ink/40">Resolution</h4>
+                <p className="text-[10px] font-medium leading-relaxed">Optimized for professional e-commerce and social displays.</p>
               </div>
             </div>
           </div>

@@ -1,20 +1,79 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+📸 Product Photo Studio
+An AI-powered web application that transforms simple product images into professional, studio-quality visuals with customizable backgrounds, avatars, and scenes.
 
-# Run and deploy your AI Studio app
+🚀 Features
+🎯 Core Features
+Upload product images
 
-This contains everything you need to run your app locally.
+AI background replacement (Studio, Marble, Dark, Lifestyle)
 
-View your app in AI Studio: https://ai.studio/apps/715fdbfa-02ee-4a7e-9303-47a605d9bf2a
+Generate high-quality product photos
 
-## Run Locally
+Realistic lighting & shadow adjustments
 
-**Prerequisites:**  Node.js
+🧍‍♂️ Advanced AI Features
+Product + Avatar generation (male/female)
+
+Scene selection (Gym, Urban, Outdoor, Home)
+
+Pose selection (Action, Close-up, Dynamic)
+
+Avatar customization (hair, skin tone, style)
+
+🎨 Customization Options
+Aspect ratios (1:1, 16:9, 4:3)
+
+Custom background upload
+
+Prompt-based image generation (AI prompt input)
+
+📁 User Features / ⚙️ Additional Features
+    Download in multiple formats (PNG, JPG, WebP).
+    Dark/Light mode.
+    Generating progress indicator.
 
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+🛠️ Tech Stack
+Frontend
+React.js / TypeScript
+Tailwind CSS / Bootstrap
+
+Backend
+Node.js
+Express.js
+
+AI Integration
+OpenAI API /  Google Geminie / 
+
+Deployment
+Vercel / Netlify / Render / (Frontend).
+
+3️⃣ Environment Variables
+Create .env file in server folder:
+
+PORT=5000
+MONGO_URI=your_mongodb_url
+Google-Geminie_API_KEY=your_api_key
+ 
+📸 Screenshot Website Demo.
+<img width="1856" height="817" alt="Screenshot 2026-04-01 134310" src="https://github.com/user-attachments/assets/9eec0dd4-3f76-4a6f-add4-8dbed2698d12" />
+
+<img width="1844" height="777" alt="Screenshot 2026-04-01 134339" src="https://github.com/user-attachments/assets/9772a5d7-a0c3-4b10-a7c1-644e93140e9d" />
+
+👨‍💻 Author
+Anuj Kumar
+
+GitHub: https://github.com/O-Anuj
+
+LinkedIn: https://www.linkedin.com/in/anuj-keshri-6346442a7/
+
+
+⭐ Support
+If you like this project:
+👉 Give it a ⭐ on GitHub
+👉 Share with others
+
+
+
+
+  

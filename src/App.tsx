@@ -58,7 +58,8 @@ const SKIN_TONES = [
 export default function App() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [mode, setMode] = useState<'studio' | 'avatar'>('studio');
+  const [mode, setMode] = useState<'studio' | 'avatar' | 'custom'>('studio');
+  const [customPrompt, setCustomPrompt] = useState('');
   const [selectedStyle, setSelectedStyle] = useState(STYLES[0]);
   const [selectedGender, setSelectedGender] = useState<'male' | 'female'>('female');
   const [selectedScene, setSelectedScene] = useState(SCENES[0]);
@@ -124,8 +125,10 @@ export default function App() {
       let prompt = '';
       if (mode === 'studio') {
         prompt = `Keep the product in this image exactly as it is, but replace the entire background. Place the product ${selectedStyle.prompt}. Ensure the lighting on the product matches the new background perfectly. High-quality professional product photography.`;
-      } else {
+      } else if (mode === 'avatar') {
         prompt = `Keep the product in this image exactly as it is in terms of shape, color, and details. Generate a realistic ${selectedGender} human model with ${selectedSkinTone.name.toLowerCase()} skin tone, ${selectedHairColor.name.toLowerCase()} ${selectedHairstyle.name.toLowerCase()} hair, ${selectedPose.prompt}, naturally ${selectedScene.prompt}. Ensure the product is the central focus and clearly visible. Match the lighting and shadows on the product to the new person and environment perfectly. High-quality professional lifestyle photography.`;
+      } else {
+        prompt = `Keep the product in this image exactly as it is, but place it in a new environment based on this description: ${customPrompt}. Ensure the lighting on the product matches the new background perfectly. High-quality professional photography.`;
       }
 
       const response = await ai.models.generateContent({
@@ -265,6 +268,14 @@ export default function App() {
                   >
                     Avatar
                   </button>
+                  <button
+                    onClick={() => setMode('custom')}
+                    className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all relative
+                      ${mode === 'custom' ? 'bg-paper shadow-sm text-ink' : 'text-ink/40 hover:text-ink/60'}`}
+                  >
+                    Custom
+                    <span className="absolute -top-1 -right-1 bg-accent text-paper text-[6px] px-1 rounded-full">PRO</span>
+                  </button>
                 </div>
               </div>
 
@@ -335,7 +346,7 @@ export default function App() {
                     </button>
                   ))}
                 </div>
-              ) : (
+              ) : mode === 'avatar' ? (
                 <div className="space-y-10">
                   {/* Gender */}
                   <div className="space-y-4">
@@ -449,6 +460,22 @@ export default function App() {
                           ))}
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-bold text-ink/30 uppercase tracking-widest">Custom Scene Description</label>
+                    <textarea
+                      value={customPrompt}
+                      onChange={(e) => setCustomPrompt(e.target.value)}
+                      placeholder="e.g. Luxury watch on marble table with golden lighting"
+                      className="w-full h-32 bg-ink/5 border border-ink/10 rounded-2xl p-4 text-[11px] font-medium placeholder:text-ink/20 focus:outline-none focus:border-ink/30 transition-all resize-none"
+                    />
+                    <div className="flex items-center gap-2 text-[9px] text-ink/40">
+                      <div className="w-1 h-1 bg-accent rounded-full" />
+                      <p>Describe the environment, lighting, and mood in detail.</p>
                     </div>
                   </div>
                 </div>

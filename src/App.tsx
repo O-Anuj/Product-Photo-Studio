@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useRef, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
-import { Upload, Image as ImageIcon, Loader2, Wand2, Check, ChevronRight, User, UserCircle, Box } from 'lucide-react';
+import { Upload, Image as ImageIcon, Loader2, Wand2, Check, ChevronRight, User, UserCircle, Box, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const STYLES = [
@@ -68,8 +68,32 @@ export default function App() {
   const [selectedSkinTone, setSelectedSkinTone] = useState(SKIN_TONES[2]);
   const [selectedAspectRatio, setSelectedAspectRatio] = useState<'1:1' | '16:9' | '4:3'>('1:1');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Initialize dark mode from localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    if (newMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -138,21 +162,48 @@ export default function App() {
       if (!foundImage) {
         throw new Error("No image was generated. Please try again.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Generation error:", err);
-      setError(err instanceof Error ? err.message : "Failed to generate image. Please check your API key and connection.");
+      let errorMessage = "An unexpected error occurred. Please try again.";
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+        try {
+          // The SDK might return a stringified JSON error
+          const parsed = JSON.parse(err.message);
+          if (parsed.error?.code === 429 || parsed.status === "RESOURCE_EXHAUSTED") {
+            errorMessage = "API Rate Limit Exceeded: You've reached your current quota. Please wait a moment before trying again or check your billing details in Google AI Studio.";
+          } else if (parsed.error?.message) {
+            errorMessage = parsed.error.message;
+          }
+        } catch (e) {
+          // If not JSON, check for keywords in the string
+          if (err.message.toLowerCase().includes("quota") || 
+              err.message.toLowerCase().includes("rate limit") || 
+              err.message.includes("429")) {
+            errorMessage = "API Rate Limit Exceeded: Please wait a moment before trying again.";
+          }
+        }
+      } else if (typeof err === 'object' && err !== null) {
+        // Handle case where err is already an object
+        if (err.error?.code === 429 || err.status === "RESOURCE_EXHAUSTED") {
+          errorMessage = "API Rate Limit Exceeded: Please wait a moment before trying again.";
+        }
+      }
+
+      setError(errorMessage);
     } finally {
       setIsGenerating(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-paper text-ink selection:bg-accent/20">
+    <div className="min-h-screen bg-paper text-ink selection:bg-accent/20 transition-colors duration-300">
       {/* Navigation Rail / Header */}
-      <header className="h-16 border-b border-ink/5 bg-white/80 backdrop-blur-md sticky top-0 z-50 px-6 flex items-center justify-between">
+      <header className="h-16 border-b border-ink/5 bg-paper/80 backdrop-blur-md sticky top-0 z-50 px-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-ink rounded-full flex items-center justify-center">
-            <Wand2 className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 bg-ink rounded-full flex items-center justify-center transition-colors">
+            <Wand2 className="w-5 h-5 text-paper" />
           </div>
           <div>
             <h1 className="text-sm font-bold tracking-tight uppercase">Product Studio</h1>
@@ -162,46 +213,55 @@ export default function App() {
         
         <div className="hidden md:flex items-center gap-8">
           <div className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded-full bg-ink text-white text-[10px] flex items-center justify-center font-bold">1</span>
+            <span className="w-5 h-5 rounded-full bg-ink text-paper text-[10px] flex items-center justify-center font-bold transition-colors">1</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-ink/40">Upload</span>
           </div>
           <div className="w-4 h-[1px] bg-ink/10" />
           <div className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded-full bg-ink text-white text-[10px] flex items-center justify-center font-bold">2</span>
+            <span className="w-5 h-5 rounded-full bg-ink text-paper text-[10px] flex items-center justify-center font-bold transition-colors">2</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-ink/40">Configure</span>
           </div>
           <div className="w-4 h-[1px] bg-ink/10" />
           <div className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded-full bg-ink text-white text-[10px] flex items-center justify-center font-bold">3</span>
+            <span className="w-5 h-5 rounded-full bg-ink text-paper text-[10px] flex items-center justify-center font-bold transition-colors">3</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-ink">Generate</span>
           </div>
         </div>
 
-        <button className="text-[10px] font-bold uppercase tracking-widest px-4 py-2 border border-ink/10 rounded-full hover:bg-ink hover:text-white transition-all">
-          Documentation
-        </button>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={toggleDarkMode}
+            className="p-2 rounded-full border border-ink/10 hover:bg-ink hover:text-paper transition-all"
+            aria-label="Toggle dark mode"
+          >
+            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+          <button className="text-[10px] font-bold uppercase tracking-widest px-4 py-2 border border-ink/10 rounded-full hover:bg-ink hover:text-paper transition-all">
+            Documentation
+          </button>
+        </div>
       </header>
 
       <main className="max-w-[1600px] mx-auto grid lg:grid-cols-2 min-h-[calc(100vh-64px)]">
         {/* Left: Controls */}
-        <div className="p-8 lg:p-12 border-r border-ink/5 bg-white overflow-y-auto max-h-[calc(100vh-64px)] scrollbar-hide">
+        <div className="p-8 lg:p-12 border-r border-ink/5 bg-paper overflow-y-auto max-h-[calc(100vh-64px)] scrollbar-hide transition-colors">
           <div className="max-w-md mx-auto space-y-12">
             {/* Step 1: Mode & Upload */}
             <section className="space-y-6">
               <div className="flex items-baseline justify-between">
                 <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-ink/30">01. Source & Mode</h2>
-                <div className="flex p-1 bg-paper rounded-full border border-ink/5">
+                <div className="flex p-1 bg-ink/5 rounded-full border border-ink/5">
                   <button
                     onClick={() => setMode('studio')}
                     className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all
-                      ${mode === 'studio' ? 'bg-white shadow-sm text-ink' : 'text-ink/40 hover:text-ink/60'}`}
+                      ${mode === 'studio' ? 'bg-paper shadow-sm text-ink' : 'text-ink/40 hover:text-ink/60'}`}
                   >
                     Studio
                   </button>
                   <button
                     onClick={() => setMode('avatar')}
                     className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all
-                      ${mode === 'avatar' ? 'bg-white shadow-sm text-ink' : 'text-ink/40 hover:text-ink/60'}`}
+                      ${mode === 'avatar' ? 'bg-paper shadow-sm text-ink' : 'text-ink/40 hover:text-ink/60'}`}
                   >
                     Avatar
                   </button>
@@ -211,7 +271,7 @@ export default function App() {
               <div 
                 onClick={() => fileInputRef.current?.click()}
                 className={`relative aspect-video rounded-2xl border border-ink/5 transition-all cursor-pointer flex flex-col items-center justify-center gap-4 group overflow-hidden
-                  ${selectedImage ? 'bg-paper' : 'bg-paper/50 hover:bg-paper'}`}
+                  ${selectedImage ? 'bg-ink/5' : 'bg-ink/5 hover:bg-ink/10'}`}
               >
                 {selectedImage ? (
                   <>
@@ -222,12 +282,12 @@ export default function App() {
                       referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-ink/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center backdrop-blur-sm">
-                      <span className="text-white text-[10px] font-bold uppercase tracking-[0.2em]">Replace Asset</span>
+                      <span className="text-paper text-[10px] font-bold uppercase tracking-[0.2em]">Replace Asset</span>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="w-12 h-12 rounded-full bg-white border border-ink/5 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-full bg-paper border border-ink/5 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                       <Upload className="w-5 h-5 text-ink/40" />
                     </div>
                     <div className="text-center">
@@ -258,7 +318,7 @@ export default function App() {
                       onClick={() => setSelectedStyle(style)}
                       className={`p-5 rounded-2xl border text-left transition-all relative group
                         ${selectedStyle.id === style.id 
-                          ? 'border-ink bg-white shadow-xl shadow-ink/5' 
+                          ? 'border-ink bg-paper shadow-xl shadow-ink/5' 
                           : 'border-ink/5 hover:border-ink/20 bg-transparent'}`}
                     >
                       <div className="flex justify-between items-start">
@@ -268,7 +328,7 @@ export default function App() {
                         </div>
                         {selectedStyle.id === style.id && (
                           <div className="w-5 h-5 bg-ink rounded-full flex items-center justify-center">
-                            <Check className="w-3 h-3 text-white" />
+                            <Check className="w-3 h-3 text-paper" />
                           </div>
                         )}
                       </div>
@@ -287,10 +347,10 @@ export default function App() {
                           onClick={() => setSelectedGender(gender)}
                           className={`p-4 rounded-2xl border flex items-center gap-4 transition-all
                             ${selectedGender === gender 
-                              ? 'border-ink bg-white shadow-lg shadow-ink/5' 
+                              ? 'border-ink bg-paper shadow-lg shadow-ink/5' 
                               : 'border-ink/5 hover:border-ink/20 bg-transparent'}`}
                         >
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${selectedGender === gender ? 'bg-ink text-white' : 'bg-paper text-ink/20'}`}>
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${selectedGender === gender ? 'bg-ink text-paper' : 'bg-ink/5 text-ink/20'}`}>
                             <User className="w-4 h-4" />
                           </div>
                           <span className="text-[11px] font-bold uppercase tracking-widest">{gender}</span>
@@ -310,7 +370,7 @@ export default function App() {
                             onClick={() => setSelectedScene(scene)}
                             className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all text-left
                               ${selectedScene.id === scene.id 
-                                ? 'border-ink bg-ink text-white' 
+                                ? 'border-ink bg-ink text-paper' 
                                 : 'border-ink/5 text-ink/40 hover:border-ink/20'}`}
                           >
                             {scene.name}
@@ -327,7 +387,7 @@ export default function App() {
                             onClick={() => setSelectedPose(pose)}
                             className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all text-left
                               ${selectedPose.id === pose.id 
-                                ? 'border-ink bg-ink text-white' 
+                                ? 'border-ink bg-ink text-paper' 
                                 : 'border-ink/5 text-ink/40 hover:border-ink/20'}`}
                           >
                             {pose.name.split(' / ')[0]}
@@ -350,7 +410,7 @@ export default function App() {
                               onClick={() => setSelectedHairColor(color)}
                               className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border transition-all
                                 ${selectedHairColor.id === color.id 
-                                  ? 'border-ink bg-ink text-white' 
+                                  ? 'border-ink bg-ink text-paper' 
                                   : 'border-ink/5 text-ink/40 hover:border-ink/20'}`}
                             >
                               {color.name}
@@ -364,7 +424,7 @@ export default function App() {
                               onClick={() => setSelectedHairstyle(style)}
                               className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border transition-all
                                 ${selectedHairstyle.id === style.id 
-                                  ? 'border-ink bg-ink text-white' 
+                                  ? 'border-ink bg-ink text-paper' 
                                   : 'border-ink/5 text-ink/40 hover:border-ink/20'}`}
                             >
                               {style.name}
@@ -381,7 +441,7 @@ export default function App() {
                               onClick={() => setSelectedSkinTone(tone)}
                               className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border transition-all
                                 ${selectedSkinTone.id === tone.id 
-                                  ? 'border-ink bg-ink text-white' 
+                                  ? 'border-ink bg-ink text-paper' 
                                   : 'border-ink/5 text-ink/40 hover:border-ink/20'}`}
                             >
                               {tone.name}
@@ -405,7 +465,7 @@ export default function App() {
                     onClick={() => setSelectedAspectRatio(ratio)}
                     className={`py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all
                       ${selectedAspectRatio === ratio 
-                        ? 'border-ink bg-white shadow-sm text-ink' 
+                        ? 'border-ink bg-paper shadow-sm text-ink' 
                         : 'border-ink/5 text-ink/40 hover:border-ink/20'}`}
                   >
                     {ratio}
@@ -421,7 +481,7 @@ export default function App() {
                 className={`w-full py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 transition-all shadow-2xl
                   ${!selectedImage || isGenerating 
                     ? 'bg-ink/5 text-ink/20 cursor-not-allowed' 
-                    : 'bg-ink text-white hover:bg-accent hover:shadow-accent/20 active:scale-[0.98]'}`}
+                    : 'bg-ink text-paper hover:bg-accent hover:shadow-accent/20 active:scale-[0.98]'}`}
               >
                 {isGenerating ? (
                   <>
@@ -440,7 +500,7 @@ export default function App() {
                 <motion.p 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-[10px] font-bold uppercase tracking-widest text-red-500 bg-red-50 p-4 rounded-2xl border border-red-100 mt-4 text-center"
+                  className="text-[10px] font-bold uppercase tracking-widest text-red-500 bg-red-500/10 p-4 rounded-2xl border border-red-500/20 mt-4 text-center"
                 >
                   {error}
                 </motion.p>
@@ -450,7 +510,7 @@ export default function App() {
         </div>
 
         {/* Right: Result */}
-        <div className="bg-paper p-8 lg:p-12 flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="bg-paper p-8 lg:p-12 flex flex-col items-center justify-center relative overflow-hidden transition-colors">
           {/* Background Decorative Elements */}
           <div className="absolute inset-0 opacity-20 pointer-events-none">
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/10 blur-[120px] rounded-full" />
@@ -458,7 +518,7 @@ export default function App() {
           </div>
 
           <div className="w-full max-w-4xl space-y-8 relative z-10">
-            <div className={`bg-white rounded-[40px] border border-ink/5 overflow-hidden shadow-2xl shadow-ink/10 relative flex items-center justify-center transition-all duration-700 ease-in-out
+            <div className={`bg-paper rounded-[40px] border border-ink/5 overflow-hidden shadow-2xl shadow-ink/10 relative flex items-center justify-center transition-all duration-700 ease-in-out
               ${selectedAspectRatio === '1:1' ? 'aspect-square' : selectedAspectRatio === '16:9' ? 'aspect-video' : 'aspect-[4/3]'}`}>
               <AnimatePresence mode="wait">
                 {generatedImage ? (
@@ -479,7 +539,7 @@ export default function App() {
                       <a 
                         href={generatedImage} 
                         download="product-studio-result.png"
-                        className="bg-white px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-accent hover:text-white transition-all shadow-2xl"
+                        className="bg-paper px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-accent hover:text-paper transition-all shadow-2xl"
                       >
                         Export High-Res
                       </a>
